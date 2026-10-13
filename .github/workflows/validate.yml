@@ -1,0 +1,33 @@
+name: Validate Ghost Kernel Sherlock
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  student:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax and deterministic evidence
+        run: |
+          python3 -m compileall -q tools tests
+          python3 tools/build_lab.py
+      - name: Verify source and specimen integrity
+        run: python3 tools/verify_lab.py
+      - name: Run tests and student ZIP validation
+        run: python3 -m unittest discover -s tests -v
+      - name: Build clean student archive
+        run: |
+          python3 tools/build_lab.py
+          python3 tools/build_student_zip.py
+      - name: Publish student only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghost-kernel-student
+          path: dist/The-Ghost-in-the-Kernel-STUDENT.zip
+          if-no-files-found: error
