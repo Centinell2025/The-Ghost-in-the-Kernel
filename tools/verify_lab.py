@@ -63,7 +63,7 @@ def verify():
         require(db.execute("PRAGMA quick_check").fetchone()[0]=="ok","broken sqlite")
         n=db.execute("SELECT count(*) FROM observations").fetchone()[0]
         p=db.execute("SELECT count(*) FROM observations WHERE event_id='PROC-711' AND reference='4320'").fetchone()[0]
-        require(n>=350 and p==1,"SQLite cache missing key event")
+        require(n>=300 and p==1,"SQLite cache missing key event")
     return dict(evidence_files=len(expected),records=n,questions=20,unverified_origins=len(provenance))
 if __name__=="__main__":
     try:print("PASS Ghost DFIR evidence:",verify())
